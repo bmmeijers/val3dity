@@ -1,0 +1,210 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>val3dity by tudelft-gist</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>val3dity</h1>
+        <p>Validation of solids according to the international standard ISO 19107</p>
+
+        <p class="view"><a href="https://github.com/tudelft-gist/val3dity">View the Project on GitHub <small>tudelft-gist/val3dity</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/tudelft-gist/val3dity/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/tudelft-gist/val3dity/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/tudelft-gist/val3dity">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a name="val3dity" class="anchor" href="#val3dity"><span class="octicon octicon-link"></span></a>val3dity</h1>
+
+<p>Validation of solids according to the international standard ISO 19107.</p>
+
+<h2>
+<a name="how-do-i-use-val3dity" class="anchor" href="#how-do-i-use-val3dity"><span class="octicon octicon-link"></span></a>How do I use val3dity?</h2>
+
+<p>It is a command-line program, which we provide as source code, together with makefiles for Mac and Linux. We plan on offering binaries (including for Windows) in the future.</p>
+
+<p>To compile val3dity, you first need to install the free libraries <a href="http://www.cgal.org">CGAL</a>, <a href="http://trac.osgeo.org/geos/">GEOS</a> and <a href="http://www.cmake.org">CMake</a>--under Mac we suggest using <a href="http://brew.sh/">Homebrew</a>. Afterwards run:</p>
+
+<pre><code>$ cmake .
+$ make
+</code></pre>
+
+<p>To execute val3dity:</p>
+
+<pre><code>$ ./val3dity outershell.poly innershell1.poly innershell2.poly
+</code></pre>
+
+<p>Each shell of the solid must be modelled with a <a href="http://tetgen.berlios.de/fformats.poly.html">POLY</a> file, the first argument is always the outer shell, and the others are inner shells.
+There can be 0 or an infinity of inner shells, their order is not important.
+For instance, to validate a solid having only one outer shell (it's a unit cube):</p>
+
+<pre><code>$ ./val3dity data/poly/cube.poly
+Reading 1 file(s).
+Reading outer shell:    data/poly/cube.poly
+
+Validating surface in 2D with GEOS (their projection)
+-----all valid
+
+Triangulating outer shell
+-----done
+
+Validating shell #0
+-----Planarity
+    yes
+-----Combinatorial consistency
+    yes
+-----Geometrical consistency
+    yes
+-----Orientation of normals
+    yes
+Shell #0 valid
+
+Valid solid. Hourrraaa!
+</code></pre>
+
+<p>And to validate a solid with one outer shell and 2 inner shells:</p>
+
+<pre><code>$ ./val3dity data/poly/cube.poly data/poly/py1.poly data/poly/py7.poly
+Reading 3 file(s).
+Reading outer shell:    data/poly/cube.poly
+Reading inner shell #0: data/poly/py1.poly
+Reading inner shell #1: data/poly/py7.poly
+
+Validating surface in 2D with GEOS (their projection)
+-----all valid
+
+Triangulating outer shell
+Triangulating inner shell #0
+Triangulating inner shell #1
+-----done
+
+Validating shell #0
+-----Planarity
+    yes
+-----Combinatorial consistency
+    yes
+-----Geometrical consistency
+    yes
+-----Orientation of normals
+    yes
+Shell #0 valid
+
+Validating shell #1
+-----Planarity
+    yes
+-----Combinatorial consistency
+    yes
+-----Geometrical consistency
+    yes
+-----Orientation of normals
+    yes
+Shell #1 valid
+
+Validating shell #2
+-----Planarity
+    yes
+-----Combinatorial consistency
+    yes
+-----Geometrical consistency
+    yes
+-----Orientation of normals
+    yes
+Shell #2 valid
+
+Inspecting interactions between the 3 shells
+Error 400: shells are face adjacent
+    [shell: #1; face: #2]
+
+Invalid solid :(
+</code></pre>
+
+<h1>
+<a name="error-reported" class="anchor" href="#error-reported"><span class="octicon octicon-link"></span></a>Error reported</h1>
+
+<h2>
+<a name="ring-level" class="anchor" href="#ring-level"><span class="octicon octicon-link"></span></a>Ring level</h2>
+
+<ul>
+<li>REPEATED_POINTS<br>
+</li>
+<li>RING_NOT_CLOSED<br>
+</li>
+<li>RING_SELF_INTERSECT</li>
+</ul><h2>
+<a name="surface-level" class="anchor" href="#surface-level"><span class="octicon octicon-link"></span></a>Surface level</h2>
+
+<ul>
+<li>SELF_INTERSECTION<br>
+</li>
+<li>NON_PLANAR_SURFACE<br>
+</li>
+<li>INTERIOR_DISCONNECTED</li>
+<li>HOLE_OUTSIDE</li>
+<li>HOLES_ARE_NESTED<br>
+</li>
+</ul><h2>
+<a name="shell-level" class="anchor" href="#shell-level"><span class="octicon octicon-link"></span></a>Shell level</h2>
+
+<ul>
+<li>NOT_VALID_2_MANIFOLD
+
+<ul>
+<li>SURFACE_NOT_CLOSED<br>
+</li>
+<li>DANGLING_FACES<br>
+</li>
+<li>FACE_ORIENTATION_INCORRECT_EDGE_USAGE<br>
+</li>
+<li>FREE_FACES<br>
+</li>
+<li>SURFACE_SELF_INTERSECTS<br>
+</li>
+</ul>
+</li>
+<li>VERTICES_NOT_USED<br>
+</li>
+<li>SURFACE_NORMALS_WRONG_ORIENTATION<br>
+</li>
+</ul><h2>
+<a name="solid-level" class="anchor" href="#solid-level"><span class="octicon octicon-link"></span></a>Solid level</h2>
+
+<ul>
+<li>SHELLS_FACE_ADJACENT<br>
+</li>
+<li>SHELL_INTERIOR_INTERSECT<br>
+</li>
+<li>INNER_SHELL_OUTSIDE_OUTER<br>
+</li>
+<li>INTERIOR_OF_SHELL_NOT_CONNECTED<br>
+</li>
+</ul><h2>
+<a name="im-interested-in-the-details-of-how-the-validation-is-performed" class="anchor" href="#im-interested-in-the-details-of-how-the-validation-is-performed"><span class="octicon octicon-link"></span></a>I'm interested in the details of how the validation is performed</h2>
+
+<p>The validation is performed hierarchically, ie first every surface are validated in 2D (with <a href="http://trac.osgeo.org/geos/">GEOS</a>), then every shell is validated (must be watertight, no self-intersections, orientation of the normals must be consistent and pointing outwards, etc.), and finally the interactions between the shells are analysed.</p>
+
+<p>Most details about the implementation are available in this <a href="http://homepage.tudelft.nl/23t4p/pdfs/_13cacaie.pdf">scientific article</a>.</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/tudelft-gist">tudelft-gist</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
